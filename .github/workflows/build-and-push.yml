@@ -1,0 +1,32 @@
+name: Build & Push Images to ECR
+
+on:
+    push:
+        branches: ["main"]
+
+jobs:
+    frontend:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Login to AWS ECR
+              uses: aws-actions/amazon-ecr-login@v2
+
+            - name: Build and Push Frontend
+              run: |
+                  docker build -t dotnet9-frontend ./src/Frontend
+                  docker tag dotnet9-frontend:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/dotnet9-frontend:latest
+                  docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/dotnet9-frontend:latest
+
+    backend:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Login to AWS ECR
+              uses: aws-actions/amazon-ecr-login@v2
+
+            - name: Build and Push Backend
+              run: |
+                  docker build -t dotnet9-backend ./src/ApiService
+                  docker tag dotnet9-backend:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/dotnet9-backend:latest
+                  docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/dotnet9-backend:latest
