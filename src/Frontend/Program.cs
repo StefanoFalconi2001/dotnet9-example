@@ -2,6 +2,13 @@ using Frontend.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configurar HttpClient para el backend
+var backendUrl = Environment.GetEnvironmentVariable("BACKEND_URL") ?? "http://localhost:8080";
+builder.Services.AddHttpClient("BackendClient", client =>
+{
+    client.BaseAddress = new Uri(backendUrl);
+});
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -12,13 +19,10 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();

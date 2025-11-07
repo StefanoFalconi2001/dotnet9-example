@@ -488,3 +488,26 @@ infra/.terraform/
 infra/terraform.tfstate
 infra/terraform.tfstate.backup
 infra/.terraform.lock.hcl
+
+# Archivos temporales de kubectl
+*.log
+*.tmp
+*.out
+
+# Archivos generados por Helm
+helm-release-values.yaml
+helm-chart.tgz
+charts/
+*.lock
+
+# Secretos o credenciales
+*.secret.yaml
+secrets.yaml
+
+# Carpeta de build / output si existe
+bin/
+obj/
+
+# Archivos locales de Minikube o Kind
+.kube/
+.k8s/
