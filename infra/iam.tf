@@ -15,10 +15,10 @@ resource "aws_iam_role" "github_actions_ecr" {
       Action    = "sts:AssumeRoleWithWebIdentity"
       Condition = {
         StringEquals = {
-          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          "token.actions.githubusercontent.com:aud" = "https://github.com/stefanofalconi2001/dotnet9-example"
         }
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:StefanoFalconi2001/dotnet9-example:*"
+          "token.actions.githubusercontent.com:sub" = "repo:stefanofalconi2001/dotnet9-example:*"
         }
       }
     }]
