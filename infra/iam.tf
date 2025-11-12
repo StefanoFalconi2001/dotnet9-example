@@ -1,10 +1,28 @@
-resource "aws_iam_user" "github_ci_user" {
-  name = "github-ci-user"
+resource "aws_iam_openid_connect_provider" "github" {
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
+}
 
-  tags = {
-    Purpose   = "CI/CD for ECR + ALB"
-    ManagedBy = "Terraform"
-  }
+resource "aws_iam_role" "github_actions_ecr" {
+  name = "GitHubActionsECRRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Federated = aws_iam_openid_connect_provider.github.arn }
+      Action    = "sts:AssumeRoleWithWebIdentity"
+      Condition = {
+        StringEquals = {
+          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+        }
+        StringLike = {
+          "token.actions.githubusercontent.com:sub" = "repo:StefanoFalconi2001/dotnet9-example:*"
+        }
+      }
+    }]
+  })
 }
 
 data "aws_iam_policy_document" "github_ci_ecr_policy" {
@@ -68,18 +86,15 @@ resource "aws_iam_policy" "github_ec2_policy" {
   policy      = data.aws_iam_policy_document.github_ci_ec2_policy.json
 }
 
-resource "aws_iam_user_policy_attachment" "github_ci_attach_ecr" {
-  user       = aws_iam_user.github_ci_user.name
+resource "aws_iam_role_policy_attachment" "github_actions_ecr_policy_attach" {
+  role       = aws_iam_role.github_actions_ecr.name
   policy_arn = aws_iam_policy.github_ecr_policy.arn
+
 }
 
-resource "aws_iam_user_policy_attachment" "github_ci_attach_ec2" {
-  user       = aws_iam_user.github_ci_user.name
+resource "aws_iam_role_policy_attachment" "github_actions_ec2_policy_attach" {
+  role       = aws_iam_role.github_actions_ecr.name
   policy_arn = aws_iam_policy.github_ec2_policy.arn
-}
-
-resource "aws_iam_access_key" "github_ci_access_key" {
-  user = aws_iam_user.github_ci_user.name
 }
 
 resource "aws_iam_openid_connect_provider" "eks" {
