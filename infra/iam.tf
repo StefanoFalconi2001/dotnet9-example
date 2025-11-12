@@ -11,14 +11,12 @@ resource "aws_iam_role" "github_actions_ecr" {
     Version = "2012-10-17"
     Statement = [{
       Effect    = "Allow"
-      Principal = { Federated = aws_iam_openid_connect_provider.github.arn }
+      Principal = { Federated = "arn:aws:iam::422600867425:oidc-provider/token.actions.githubusercontent.com" }
       Action    = "sts:AssumeRoleWithWebIdentity"
       Condition = {
         StringEquals = {
-          "token.actions.githubusercontent.com:aud" = "https://github.com/stefanofalconi2001/dotnet9-example"
-        }
-        StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:stefanofalconi2001/dotnet9-example:*"
+          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com",
+          "token.actions.githubusercontent.com:sub" = "repo:StefanoFalconi2001/dotnet9-example:ref:refs/heads/main"
         }
       }
     }]
