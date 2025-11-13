@@ -7,11 +7,6 @@ on:
       - "src/Frontend/**"
       - ".github/workflows/build-frontend.yml"
 
-env:
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-  AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-  FRONTEND_REPOSITORY: ${{ secrets.FRONTEND_REPOSITORY }}
-
 jobs:
   build-and-push-frontend:
     runs-on: ubuntu-latest
