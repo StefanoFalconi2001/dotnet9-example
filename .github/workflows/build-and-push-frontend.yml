@@ -6,6 +6,7 @@ on:
     paths:
       - "src/Frontend/**"
       - ".github/workflows/build-frontend.yml"
+  workflow_dispatch:
 
 jobs:
   build-and-push-frontend:
@@ -20,8 +21,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::422600867425:role/GitHubActionsECRRole
-          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to AWS ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -29,5 +30,6 @@ jobs:
       - name: Build and Push Frontend Image
         run: |
           IMAGE_URI=${{ secrets.FRONTEND_REPOSITORY }}:latest
+          echo "Building and pushing $IMAGE_URI..."
           docker build -t $IMAGE_URI ./src/Frontend
           docker push $IMAGE_URI

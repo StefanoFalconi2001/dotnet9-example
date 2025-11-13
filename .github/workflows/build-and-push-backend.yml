@@ -6,7 +6,7 @@ on:
     paths:
       - "src/ApiService/**"
       - ".github/workflows/build-backend.yml"
-  workflow_dispatch: # <-- Permite ejecutar manualmente desde la interfaz de GitHub
+  workflow_dispatch:
 
 jobs:
   build-and-push-backend:
@@ -18,23 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🔍 Debug OIDC Token
-        run: |
-          echo "Requesting GitHub OIDC token..."
-          TOKEN=$(curl -sLS -X POST -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r '.value')
-          if [ -z "$TOKEN" ]; then
-            echo "❌ No se generó token OIDC"
-            exit 1
-          else
-            echo "✅ OIDC token emitido correctamente"
-          fi
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::422600867425:role/GitHubActionsECRRole
-          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to AWS ECR
         uses: aws-actions/amazon-ecr-login@v2
