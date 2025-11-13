@@ -20,14 +20,14 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to AWS ECR
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and Push Frontend Image
         run: |
-          IMAGE_URI=${{ env.FRONTEND_REPOSITORY }}:latest
+          IMAGE_URI=${{ secrets.FRONTEND_REPOSITORY }}:latest
           docker build -t $IMAGE_URI ./src/Frontend
           docker push $IMAGE_URI
