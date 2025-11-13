@@ -8,21 +8,18 @@ on:
       - ".github/workflows/build-backend.yml"
 
 jobs:
-  build-and-push-backend:
+  authenticate:
+    name: auth
     runs-on: ubuntu-latest
-
     permissions:
-      contents: read
       id-token: write
-
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: arn:aws:iam::422600867425:role/GitHubActionsECRRole
+          aws-region: us-east-1
 
       - name: Login to AWS ECR
         uses: aws-actions/amazon-ecr-login@v2
