@@ -8,18 +8,20 @@ on:
       - ".github/workflows/build-backend.yml"
 
 jobs:
-  authenticate:
-    name: auth
+  build-and-push-backend:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
       contents: read
+      id-token: write
+
     steps:
+      - uses: actions/checkout@v4
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::422600867425:role/GitHubActionsECRRole
-          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to AWS ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -27,6 +29,5 @@ jobs:
       - name: Build and Push Backend Image
         run: |
           IMAGE_URI=${{ secrets.BACKEND_REPOSITORY }}:latest
-          echo "Building and pushing $IMAGE_URI..."
           docker build -t $IMAGE_URI ./src/ApiService
           docker push $IMAGE_URI
