@@ -28,7 +28,7 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_AmazonEKSServicePolicy" {
 resource "aws_eks_cluster" "demo_cluster" {
   name     = var.cluster_name
   role_arn = aws_iam_role.eks_cluster_role.arn
-  version  = "1.33" # o ajusta a la versión que quieras
+  version  = "1.33"
 
   vpc_config {
     subnet_ids              = [aws_subnet.eks_subnet_a.id, aws_subnet.eks_subnet_b.id]
